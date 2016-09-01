@@ -1,0 +1,88 @@
+Tema 2 - Snake
+Programarea Calculatoarelor - seria CC, an universitar 2014-2015
+
+Am rezolvat toate cele 5 cerinte.
+Aplicatia interactioneaza cu utilizatorul in felul urmator. Initial
+apare un ecran in care jucatorul este rugat sa-si introduca numele, 
+dupa introducere jucatorul apasa tasta Enter pentru a trece mai departe.
+In continuare, jucatorul poate alege din cele doua moduri de joc posibile:
+cu obstacole sau fara obstacole. Pentru a naviga prin mediul pus la 
+dispozitie jucatorul va folosi tastele Sageata Sus si Sageata Jos si tasta
+Enter pentru a alege modul dorit. Daca modul ales este cel cu obstacole,
+in continuare va aparea un nou ecran, snake-ul, obstacole initiale si o
+mancare initiala. Pentru incepul snake-ul nu se deplaseaza, dar odata ce 
+jucatorul a apasat una din tastele pentru directie implicite (w, a, s, d),
+snake-ul porneste cu o viteza initiala. Pe ecran, in partea stanga-sus, va 
+aparea tot timpul nivelul la care este jucatorul. De asemenea jucatorul 
+poate obtine un scor. Pentru fiecare hrana mancata, jucatorul primeste 10
+puncte. In momentul in care jucatorul a colectat 50 de puncte, echivalentul 
+a 5 puncte cu hrana, creste nivelul, viteza se mareste si sunt generate noi 
+obstacole. Snake-ul creste in lungime cu un caracter pentru fiecare punct 
+de hrana pe care il manaca. Odata ce snake-ul a lovit peretii ferestrei, 
+obstacolele sau pe el insusi, jocul se incheie, iar pe ecran apare un mesaj
+care il anunta pe jucator ca a pierdut, modul in care sa iasa din aplicatie,
+un salut si scorul obtinut. Daca modul ales este cel fara obstacole, pe ecran
+va aparea snake-ul initial care nu se misca si mancarea generata. Sistemul de
+punctaj se mentine ca si la modul anterior. Nivelul si viteza cresc la 5 
+puncte de hrana mancate, fiecare punct de hrana valoreaza 10 puncte. 
+In momentul in care jucatorul a lovit peretii ferestrei sau pe el insusi, 
+jocul se incheie, iar pe ecran apare acelasi mesaj ca si la modul anterior.
+
+Metoda de rezolvare a cerintelor este urmatoarea. Pentru crearea celor 3
+ecrane de tip WINDOW( introducerea numelui, alegerea modului de joc dorit
+si spatiul snake-ului) am folosit functia create_win.
+
+Primul ecran solicita introducerea numelui jucatorului, nume care apare si
+in mesajul ce anunta incheierea jocului. Retinerea si afisarea numelui se
+fac cu ajutorul functiei wgetstr() din biblioteca ncurses.h. De asemena
+pentru un aspect mai interesant, am ales ca pentru acest ecran sa definesc 
+perechea de culori albastru-negru.
+
+Cel de-al doilea ecran reprezinta meniul pentru alegerea modului de joc
+dorit. Printarea ecranului se realizeaza cu ajutorul functiei print_menu,
+unde am folosit functiile wattron() si wattroff() ce primesc un atribut
+si il aplica sirului de caractere. Am ales sa folosesc atributul A_REVERSE
+pentru a evidentia optiune dorita. Acesta evidentiere se realizeaza in functie
+de parametrul highlight, primit de functie care depinde de apasarea tastelor
+Sageata Sus, Sageata Jos si Enter. Pentru a imbunatati aspectul am definit 
+perechea de culori verde-negru.
+
+Cel de-al treilea ecran reprezinta spatiul snake-ului. Snake-ul este format
+dintr-un vector de structuri cu dimensiunea maxima latimea * inaltimea - 21 
+(caracterele speciale). Strctura snakedir contine doua variabile de tip int
+pentru coordonatele pe axele Ox si Oy ale snake-ului. Snake-ul este printat
+pe ecran cu ajutorul functiei print_snake ce primeste ca parametrii ecranul
+in care sa printeze, coordonatele snake-ului si lungimea sa. Coordonatele 
+sunt generate in functia move_snake care in functie de tastele apasate, 
+incrementeaza sau decrementeaza coordonatele pe x si y ale structurii. In 
+cazul in care snake-ul loveste peretii ecranului sunt afisate mesajele 
+corespunzatoare. Pentru a simula miscarea, intr-un for se copiaza 
+coordonatele de pe pozitia urmatoare. Coordonatele hranei sunt generate
+cu ajutorul functiei gen_food. Initial se genereaza doua valori aleatoare
+si se foloseste restul impartirii acestei valori la inaltime si latime 
+astfel incat sa nu se genereze pe marginea ecranului. Apoi se verifica 
+daca coordonatele generate corespund cu oricare dintre coordonatele 
+snake-ului sau obstacolelor. In cazul in care coordonatele nu sunt 
+multumitoare se genereaza unele noi. Coordonatele obstacolelor se genereaza
+intr-un mod asemanator in functia gen_barr. Obstacolele se printeaza cu 
+ajutorul functiei print_barr.
+Miscarea snake-ului se realizeaza intr-o bucla din care se iese la apasarea
+tasei 'q' sau la lovirea de pereti, obsacole sau se el insusi. Pentru a 
+verifica daca snake-ul s-a lovit de el insusi parcurg intr-un for toate 
+coordonatele mai putin cele corespunzatoare capului si verific daca capul
+si oricare alta parte au aceleasi coordonate.Pentru a verifica daca snake-ul
+loveste barele parcurg intr-un for numarul de bare si verific daca capul 
+sarpelui are aceeasi coordonata pe y cu obstacolul si daca coordonata pe x
+este cuprinsa intre coordonata primului si ultimului caracter ce formeaza 
+obstacolul. Acest aloritm este folosit si pentru conditiile de generare a
+hranei si obstacolelor. In intr-un if ce verifica daca snake-ul are aceleasi
+coordonate precum hrana folosind doua variabile de tip int, calculez scorul 
+si nivelul. In acelasi if cresc lungimea snake-ului si calculez noile coordonate
+prin salvarea coordonatelor cozii inainte de ultima miscare si atribuirea 
+acestora noii pozitii create in vector. In final apelez functia print_snake
+pentru a printa pe ecran noul snake. Miscarea automata a snake-ul se realizeaza
+cu functia timeout() ce primeste un int initial, care se decrementeaza 
+in functie de cresterea niveluiul ceea ce genereaza cresterea vitezei.  
+Iesirea din joc se realizeazacu ajutorul functiei getchat() ce ofera 
+jucatorului sansa sa-si afle scorul din mesajul final, se sterge ecranul
+pentru eliberarea memoriei cu functia delwin() si se incheie executia.
